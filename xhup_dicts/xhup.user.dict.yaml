@@ -1,0 +1,17 @@
+# Rime dictionary
+# encoding: utf-8
+#---config@码表分类=主码-用户码表
+#---config@码表别名=用户
+
+---
+name: xhup.user
+version: "v10.9s"
+sort: by_weight
+use_preset_vocabulary: false
+...
+凇	ssd
+凇鹤	sshe
+龙空	lsks
+龙的天空	ldtk
+优书	yzuu
+抖音	dzyb

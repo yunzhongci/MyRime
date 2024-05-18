@@ -1,0 +1,215 @@
+# Rime schema settings
+# encoding: utf-8
+
+schema:
+  schema_id: xhup
+  name: 小鹤音形
+  version: "v10.9s"
+  author:
+    - 方案设计：何海峰 <flypy@qq.com>
+    - 方案调整：水猫 <kchen0x@gmail.com>
+  description: |
+    小鹤音形主码表
+  dependencies:
+    - xhup_reverse
+
+# 使用雾凇默认的标点符号
+punctuator:
+  import_preset: default
+
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [ 中, A ]
+  - name: full_shape
+    states: [ 半, 全 ]
+  - name: simplification
+    states: [ 简, 繁 ]
+    reset: 0
+  - name: ascii_punct
+    states: [ 。，, ．， ]
+    reset: 0
+  - name: short_hints  #滤镜
+    reset: 1
+    states: [ 🙈, 🐵 ]
+
+engine:
+  processors:
+    - lua_processor@*xhup/shortcut_processor
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - table_translator                          # 码表
+    - lua_translator@*xhup/date_translator      # Lua 日期
+    - lua_translator@*xhup/time_translator      # Lua 时间
+    - lua_translator@*xhup/shortcut_translator  # Lua 直通车
+    - reverse_lookup_translator@xhup_reverse
+    - history_translator@history                # 重复上屏
+  filters:
+    - simplifier
+    - simplifier@simplification
+    - simplifier@short_hints #滤镜
+    - uniquifier
+
+# 拼写设定
+speller:
+  alphabet: "abcdefghijklmnopqrstuvwxyz;'"    # 不直接上屏的标点
+  initials: ';abcdefghijklmnopqrstuvwxyz'     # 可以作为第一位的引导词
+  finals: "'"
+  # delimiter: " '"
+  max_code_length: 4
+  auto_select: true   #顶字上屏
+  auto_select_pattern: ^;.$|^\w{4}$
+  auto_clear: max_length #manual|auto|max_length 空码按下一键确认清屏|空码自动清|达到最长码时后码顶上清屏
+
+# 翻译器，小鹤音形
+translator:
+  dictionary: xhup                # 挂载词库 xhup.dict.yaml
+  enable_charset_filter: false
+  enable_sentence: false          # 是否启用造句模式
+  enable_completion: false        # 编码提示开关
+  enable_user_dict: false
+  disable_user_dict_for_patterns:
+    - "^z.*$"
+
+# 重复上屏
+history:
+   input: ;f
+   size: 1              # 重复前几次上屏
+   initial_quality: 1   # 首选
+
+# 简繁转换器
+simplification:
+  opencc_config: s2tw.json      # s2t.json | s2hk.json | s2tw.json | s2twp.json
+  option_name: simplification
+  tips: all                     # 转换提示: all 都显示 | char 仅单字显示 | none 不显示。
+
+short_hints:
+  opencc_config: short_hints.json
+  option_name: short_hints
+  show_in_comment: true #作为注解在后面显示
+  comment_format:
+   - xform/^/〔/
+   - xform/$/〕/
+  tips: all
+  # tags:
+  #   - abc
+  #   - tiger
+  #   - tigress
+  #   - xhup
+    # - reverse_lookup
+
+# 反查词库
+xhup_reverse:
+  dictionary: xhup_reverse
+  comment_format:
+   # - xform/^/〔/
+   # - xform/$/〕/
+    - xform/ / /
+
+# 快捷键设置
+key_binder:
+  import_preset: default  # 从 default.yaml 继承通用的
+  bindings:               # 一些专用的快捷键
+    - {accept: bracketleft, send: bracketleft, when: paging}        # 注销[上翻页
+    - {accept: bracketright, send: bracketright, when: has_menu}    # 注销]下翻页
+    - {accept: comma, send: comma, when: paging}                    # 注销逗号翻页
+    - {accept: period, send: period, when: has_menu}                # 注销句号翻页
+    - {accept: semicolon, send: '2', when: has_menu}                # 分号次选
+  #  - {accept: Release+semicolon, send: semicolon, when: has_menu} # 如启用此行，则分号引导符号功能无效
+    - {accept: Release+period, send: period, when: composing}       # 句号顶屏
+    - {accept: Release+comma, send: comma, when: composing}         # 逗号顶屏
+    - {accept: "Tab", send: Escape, when: composing}                # 注销 Tab 键（default 可以通过 Tab 来切换光标至下一个拼音）
+    - {accept: "Shift_R", send: Escape, when: composing}            # 注销右侧 Shift 键，用来进行输入法切换中英（配合 Karabiner）
+    - {accept: "Shift+space", toggle: full_shape, when: always}     # 切换全半角
+    - {accept: "Control+period", toggle: ascii_punct, when: always} # 切换中英标点
+    - {accept: "Control+j", toggle: simplification, when: always}   # 切换简繁
+
+# 识别器
+recognizer:
+  import_preset: default                  # 从 default.yaml 继承通用的
+  patterns:
+    uppercase: "[A-Z][-_+.'0-9A-Za-z]*$"  # 中文状态可以混合输入大写英文
+    # uppercase: ""                       # 中文状态大写锁定直接上屏
+    reverse_lookup: "[a-z`]*`+[a-z`]*"
+    punct: ""
+    expression: "^=.*$"
+
+menu:
+  page_size: 5      # 候选项数
+
+style:
+  color_scheme: crane
+  color_scheme_dark: crane
+  horizontal: true
+
+preset_color_schemes:
+  # 凇鹤版小鹤双拼输入法皮肤
+  crane:
+    name: "雪下鹤"
+    author: "水猫 <kchen0x@gmail.com>"
+    back_color: 0xE3E3E3                    # 候选条背景色
+    border_color_width: 2
+    border_color: 0x545554                  # 边框色
+    border_height: 4                        # 窗口边界高度，大于圆角半径才生效
+    border_width: 4                         # 窗口边界宽度，大于圆角半径才生效
+    candidate_format: "\u2005%@\u2005"      # 取消掉候选序号，用 1/6 em 空格 U+2005 包围候选词，这样更边距更舒服
+    corner_radius: 4                        # 窗口圆角半径
+    hilited_text_color: 0x000000            # 编码高亮
+    hilited_back_color: 0xffffff            # 编码背景高亮
+    hilited_candidate_label_color: 0xeeeeee # 首选编号色
+    hilited_candidate_text_color: 0xffffff  # 首选文字色
+    hilited_candidate_back_color: 0x545554  # 首选背景色
+    hilited_comment_text_color: 0xcccccc    # 首选提示字母色
+    label_color: 0x555555                             # 次选编号色
+    candidate_text_color: 0x000000                    # 次选文字色
+    candidate_back_color: 0xffffff                    # 次选背景色
+    comment_text_color: 0x555555                      # 次选提示字母色
+    # horizontal: true                        # 候选窗横向显示
+    font_point: 18                          # 候选窗文字字号
+    comment_font_point: 16                  # 提示文字大小
+    label_font_point: 12                    # 候选窗编号字号
+    # inline_preedit: true                    # 开启嵌入编码
+    # inline_candidate: true                  # 开启嵌入候选
+    text_color: 0x333333                    # 编码行文字颜色，24位色值，16进制，BGR顺序
+
+  # 原版小鹤双拼输入法皮肤
+  metro:
+    author: "flypy.com"
+    back_color: 0xffffff                    # 候选条背景色
+    border_color_width: 1
+    border_color: 0xe89f00                  # 边框色
+    border_height: 8                        # 窗口边界高度，大于圆角半径才生效
+    border_width: 8                         # 窗口边界宽度，大于圆角半径才生效
+    candidate_format: "%c\u2005%@"          # 用 1/6 em 空格 U+2005 来控制编号 %c 和候选词 %@ 前后的空间。
+    corner_radius: 6                        # 窗口圆角半径
+    #hilited_corner_radius: 6                # 高亮圆角
+    hilited_text_color: 0x000000            # 编码高亮
+    hilited_back_color: 0xffffff            # 编码背景高亮
+    hilited_candidate_label_color: 0xeeeeee # 首选编号色
+    hilited_candidate_text_color: 0xffffff  # 首选文字色
+    hilited_candidate_back_color: 0xe89f00  # 首选背景色
+    hilited_comment_text_color: 0xcccccc    # 首选提示字母色
+    label_color: 0x555555                             # 次选编号色
+    candidate_text_color: 0x000000                    # 次选文字色
+    candidate_back_color: 0xffffff                    # 次选背景色
+    comment_text_color: 0x555555                      # 次选提示字母色
+    horizontal: true                        # 候选窗横向显示
+    font_point: 18                          # 候选窗文字字号
+    label_font_point: 14                    # 候选窗编号字号
+    inline_preedit: true                    # 开启嵌入编码
+    name: "metro"
+    text_color: 0x333333                    # 编码行文字颜色，24位色值，16进制，BGR顺序
