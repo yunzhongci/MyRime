@@ -5,10 +5,9 @@
 
 ## 参考
 - [薄荷输入法](https://www.mintimate.cc/zh/)
-
 - [凇鹤拼音](https://github.com/kchen0x/rime-crane/tree/main)
-
 - [雾凇拼音 | 长期维护的简体词库](https://github.com/iDvel/rime-ice)
+- [Rime 官方定制指南](https://github.com/rime/home/wiki/CustomizationGuide)
 
 ## 本输入方案内包含 
 - 小鹤双拼-薄荷定制: 基于小鹤双拼，添加定制内容。支持输入音形(形码)作为辅助输入；
