@@ -4,7 +4,7 @@
 
 
 ## 参考
-- [薄荷输入法](https://www.mintimate.cn/2023/03/18/rimeQuickInit)
+- [薄荷输入法](https://www.mintimate.cc/zh/)
 
 - [凇鹤拼音](https://github.com/kchen0x/rime-crane/tree/main)
 
