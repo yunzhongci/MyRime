@@ -12,6 +12,12 @@
 
 config_version: '2024-03-11'
 
+# 设置app默认英文
+
+app_options:
+  com.apple.Terminal:
+    ascii_mode: true
+    
 # 选项: last | default | _custom_
 # last: 上次使用的拉丁键盘布局
 # default: 美国 (ABC) 键盘布局
