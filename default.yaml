@@ -9,8 +9,9 @@ config_version: "24.03.24"
 schema_list:
   - schema: double_pinyin_flypy  # 小鹤双拼
   - schema: xhup            # 小鹤音形
-  # - schema: rime_mint            # 薄荷拼音
+  - schema: rime_mint            # 薄荷拼音
   # - schema: rime_mint_flypy      # 薄荷拼音-小鹤混输方案
+default_schema: double_pinyin_flypy
 
 switcher:
   # 切换方案时显示的标题
